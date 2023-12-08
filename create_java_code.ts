@@ -82,8 +82,11 @@ for (let key in moves) {
             }
         }
     }
-    let desc=moveDesc[key]==undefined ? "":moveDesc[key].desc;
-    build_java_code(make_valid_identifier(move["name"]),desc,map)
+    if(Object.keys(map).length>0){
+        let desc=moveDesc[key]==undefined ? "":moveDesc[key].desc;
+        build_java_code(make_valid_identifier(move["name"]),desc,map)
+    }
+    
 }
 
 
