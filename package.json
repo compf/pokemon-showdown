@@ -43,7 +43,8 @@
     "posttest": "npm run tsc",
     "full-test": "npm run lint && npm run tsc && mocha --timeout 8000 --forbid-only -g \".*\"",
     "full-test-ci": "eslint --no-error-on-unmatched-pattern ${FILES} --max-warnings 0 && npm run tsc && (([ \"$SKIPSIMTESTS\" = true ] && mocha --timeout 8000 --forbid-only -g \".*\" --exclude \"test/{sim,random-battles}/**\") || mocha --timeout 8000 --forbid-only -g \".*\")",
-    "postinstall": "npm run build postinstall"
+    "postinstall": "npm run build postinstall",
+    "createJavaCode": "node build && node dist/create_java_code.js"
   },
   "bin": "./pokemon-showdown",
   "homepage": "http://pokemonshowdown.com",
@@ -72,7 +73,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.2",
     "@types/cloud-env": "^0.2.2",
-    "@types/node": "^14.18.36",
+    "@types/node": "^14.18.63",
     "@types/node-static": "^0.7.7",
     "@types/nodemailer": "^6.4.4",
     "@types/pg": "^8.6.5",
