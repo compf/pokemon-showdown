@@ -64,29 +64,51 @@ function get_indexers_by_kind(){
             throw "unknown effect type";
     }
 }
+function create_factory(all_moves_with_effects:string[]){
+    const packageDecl="package compf.core.engine.pokemon.effects;";
+    const importStatements=" import compf.core.engine.pokemon.effects.PokemonBattleEffect;\n import compf.core.engine.pokemon.Pokemon;"
+    let className=effect_type.charAt(0).toUpperCase() + effect_type.slice(1)+"EffectFactory";
+    let classHeader="public class "+className+"{\n";
+    let methodHeader="public static PokemonBattleEffect getEffect(String effectName,Pokemon pkmn){\n";
+    let methodBody="switch(effectName){\n";
+    for(let move of all_moves_with_effects){
+        methodBody+="case \""+move+"\":\n";
+        let valid_identifier=make_valid_identifier(move);
+        methodBody+="return new compf.core.engine.pokemon.effects.newEffects."+effect_type+"."+valid_identifier+"(pkmn);\n";
+    }
+    methodBody+="default:\n";
+    methodBody+="return null;\n";
+    let content=packageDecl+"\n"+importStatements+"\n"+classHeader+"\n"+methodHeader+"\n"+methodBody+"\n"+"}\n"+"}\n}";
+    fs.writeFileSync("../../core/src/main/java/compf/core/engine/pokemon/effects/"+className+".java",content);
+    console.log(content);
+}
+
 let indexers=get_indexers_by_kind();
-let moveDesc=indexers.text;
-let moves = indexers.main;
-for (let key in moves) {
+let descriptions=indexers.text;
+let objects = indexers.main;
+let allNonEmptyClasses=[]
+for (let key in objects) {
     console.log(key)
-    let move = moves[key];
+    let object = objects[key];
     let map={}
-    for (let field in move) {
-        if (typeof (move[field]) == "function") {
-            map[field]=move[field].toString();
-           let content= move[field].toString();
+    for (let field in object) {
+        if (typeof (object[field]) == "function") {
+            map[field]=object[field].toString();
+           let content= object[field].toString();
         }
         else if(field=="condition"){
-            for(let condition in move[field]){
-               map[condition]=move[field][condition].toString();
+            for(let condition in object[field]){
+               map[condition]=object[field][condition].toString();
             }
         }
     }
     if(Object.keys(map).length>0){
-        let desc=moveDesc[key]==undefined ? "":moveDesc[key].desc;
-        build_java_code(make_valid_identifier(move["name"]),desc,map)
+        allNonEmptyClasses.push(object["name"]);
+        let desc=descriptions[key]==undefined ? "":descriptions[key].desc;
+        build_java_code(make_valid_identifier(object["name"]),desc,map)
     }
     
 }
+create_factory(allNonEmptyClasses);
 
 
